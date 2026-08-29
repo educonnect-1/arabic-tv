@@ -1,0 +1,204 @@
+@import "tailwindcss";
+
+/*
+  دليل الترددات — نظام تصميم مستوحى من شاشة قوائم الرسيفر (OSD)
+  الألوان والمسافات معرّفة هنا بصيغة Tailwind v4 (@theme) بدل ملف config منفصل.
+*/
+@theme {
+  /* الخلفيات */
+  --color-void: #090c11;
+  --color-void-2: #0c1016;
+  --color-panel: #12161d;
+  --color-panel-raised: #1a2029;
+  --color-line: rgba(255, 255, 255, 0.08);
+  --color-line-strong: rgba(255, 255, 255, 0.16);
+
+  /* النصوص */
+  --color-ink: #eceef3;
+  --color-ink-dim: #b4bac7;
+  --color-mute: #7c8494;
+
+  /* ألوان الإشارة (مستوحاة من واجهة الرسيفر الفعلية) */
+  --color-signal: #2edda6;
+  --color-signal-dim: rgba(46, 221, 166, 0.14);
+  --color-tally: #ff5468;
+  --color-tally-dim: rgba(255, 84, 104, 0.14);
+  --color-freq: #f2b84b;
+  --color-freq-dim: rgba(242, 184, 75, 0.14);
+  --color-sat: #4c8dff;
+  --color-sat-dim: rgba(76, 141, 255, 0.14);
+
+  /* الخطوط */
+  --font-display: var(--font-tajawal), system-ui, sans-serif;
+  --font-body: var(--font-ibm-plex), system-ui, sans-serif;
+  --font-data: var(--font-ibm-plex-mono), "SFMono-Regular", Consolas, monospace;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-void);
+    color: var(--color-ink);
+    margin: 0;
+    padding: 0;
+    background-image:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(76, 141, 255, 0.08), transparent),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(46, 221, 166, 0.06), transparent);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+
+  ::selection {
+    background: var(--color-signal);
+    color: var(--color-void);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-void);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-panel-raised);
+    border-radius: 999px;
+    border: 2px solid var(--color-void);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* ---- الأزرار ---- */
+  .btn-primary {
+    background-color: var(--color-signal);
+    color: #06120d;
+    padding: 0.75rem 2rem;
+    border-radius: 0.6rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    box-shadow: 0 0 0 1px rgba(46, 221, 166, 0.25), 0 8px 24px -8px rgba(46, 221, 166, 0.45);
+  }
+  .btn-primary:hover {
+    background-color: #3ff0b8;
+    transform: translateY(-1px);
+  }
+  .btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-secondary {
+    background-color: var(--color-panel);
+    color: var(--color-ink);
+    padding: 0.75rem 2rem;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    border: 1px solid var(--color-line-strong);
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+  .btn-secondary:hover {
+    background-color: var(--color-panel-raised);
+    border-color: var(--color-sat);
+  }
+
+  /* ---- سطح عام (بطاقة/لوحة) ---- */
+  .osd-panel {
+    background-color: var(--color-panel);
+    border: 1px solid var(--color-line);
+    border-radius: 1rem;
+  }
+
+  /* ---- شريحة بيانات رقمية (تردد / معدل ترميز ...) بخط Mono ---- */
+  .osd-chip {
+    font-family: var(--font-data);
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--color-line);
+    border-radius: 0.4rem;
+    padding: 0.3rem 0.6rem;
+    color: var(--color-ink-dim);
+  }
+
+  /* ---- مؤشر البث الآن (تالي لايت حمراء) ---- */
+  .tally-dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background-color: var(--color-tally);
+    box-shadow: 0 0 0 3px var(--color-tally-dim);
+    animation: tally-blink 2.4s ease-in-out infinite;
+  }
+
+  /* ---- أعمدة قوة الإشارة ---- */
+  .signal-bars {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 14px;
+  }
+  .signal-bars span {
+    width: 3px;
+    background-color: var(--color-signal);
+    border-radius: 1px;
+    animation: signal-pulse 1.6s ease-in-out infinite;
+  }
+  .signal-bars span:nth-child(1) { height: 30%; animation-delay: 0ms; }
+  .signal-bars span:nth-child(2) { height: 55%; animation-delay: 120ms; }
+  .signal-bars span:nth-child(3) { height: 75%; animation-delay: 240ms; }
+  .signal-bars span:nth-child(4) { height: 100%; animation-delay: 360ms; }
+
+  /* ---- تأثير "الضبط" عند تحميل شريط القناة ---- */
+  .tuning-in {
+    animation: tuning-flicker 0.7s steps(6, end) 1;
+  }
+}
+
+@keyframes signal-pulse {
+  0%, 100% { opacity: 0.55; transform: scaleY(0.85); }
+  50% { opacity: 1; transform: scaleY(1); }
+}
+
+@keyframes tally-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+@keyframes tuning-flicker {
+  0% { opacity: 0; filter: brightness(2) saturate(0); }
+  20% { opacity: 1; filter: brightness(0.6); }
+  35% { opacity: 0.3; filter: brightness(1.8); }
+  55% { opacity: 1; filter: brightness(0.8); }
+  75% { opacity: 0.6; }
+  100% { opacity: 1; filter: brightness(1) saturate(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signal-bars span,
+  .tally-dot,
+  .tuning-in {
+    animation: none !important;
+  }
+}
